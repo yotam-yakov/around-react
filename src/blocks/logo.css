@@ -1,0 +1,4 @@
+.logo {
+  width: calc(126px + 47 * ((100vw - 320px) / 960));
+  margin-left: calc(27px - 27 * ((100vw - 320px) / 960));
+}

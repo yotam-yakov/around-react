@@ -1,0 +1,6 @@
+.header {
+  width: calc(320px + 560 * ((100vw - 320px) / 960));
+  max-width: 880px;
+  height: calc(56px + 18 * ((100vw - 320px) / 960));
+  border-bottom: 1px solid rgba(84, 84, 84, 0.7);
+}

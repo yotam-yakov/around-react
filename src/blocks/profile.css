@@ -1,0 +1,124 @@
+.profile {
+  width: calc(320px + 560 * ((100vw - 320px) / 960));
+  max-width: 880px;
+  margin-top: calc(42px - 2 * ((100vw - 320px) / 960));
+  display: flex;
+  align-items: center;
+}
+
+.profile__info {
+  margin-left: 30px;
+  margin-right: auto;
+}
+
+.profile__avatar-cover {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.profile__avatar {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.profile__avatar-edit {
+  background-color: rgba(0, 0, 0, 0.8);
+  background-image: url(../images/avatar-edit-button.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  border: 0;
+  padding: 60px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.2s linear;
+}
+
+.profile__avatar-edit:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.profile__name {
+  display: flex;
+}
+
+.profile__name-text {
+  font-family: Inter, sans-serif;
+  font-weight: 500;
+  font-size: min(calc(22px + 20 * ((100vw - 320px) / 960)), 42px);
+  line-height: 48px;
+  margin: 0;
+}
+
+.profile__about {
+  font-family: Inter, sans-serif;
+  font-size: calc(14px + 4 * ((100vw - 320px) / 960));
+  margin: calc(14px + 2 * ((100vw - 320px) / 960)) 0 0;
+}
+
+.profile__edit-button {
+  background-color: black;
+  background-image: url(../images/edit-button.svg);
+  background-repeat: no-repeat;
+  background-size: calc(18px + 6 * ((100vw - 320px) / 960));
+  background-position: center;
+  border: 0;
+  width: calc(18px + 6 * ((100vw - 320px) / 960));
+  margin-left: calc(10px + 8 * ((100vw - 320px) / 960));
+  transition: opacity 0.2s linear;
+}
+
+.profile__edit-button:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.profile__add-button {
+  background-color: black;
+  background-image: url(../images/add-button.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-left: 30px;
+  width: 150px;
+  height: 50px;
+  border: 2px solid white;
+  border-radius: 2px;
+  transition: opacity 0.2s linear;
+}
+
+.profile__add-button:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 934px) {
+  .profile {
+    flex-flow: column nowrap;
+    justify-content: center;
+  }
+
+  .profile__info {
+    margin: 30px auto 36px;
+  }
+
+  .profile__name {
+    line-height: 1.2;
+  }
+
+  .profile__about {
+    text-align: center;
+  }
+
+  .profile__add-button {
+    margin: 0;
+    width: 282px;
+  }
+}

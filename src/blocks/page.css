@@ -1,0 +1,10 @@
+.page {
+  background-color: black;
+  padding: calc(28px + 17 * ((100vw - 320px) / 960))
+    calc(19px + 181 * ((100vw - 320px) / 960))
+    calc(36px + 24 * ((100vw - 320px) / 960));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
