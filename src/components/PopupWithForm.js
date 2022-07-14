@@ -4,19 +4,21 @@ import { config } from "../utils/constants";
 
 export default function PopupWithForm(props) {
   React.useEffect(() => {
-    const formValidator = new FormValidator(
-      config,
-      `.${props.name}-popup__form`
-    );
+    if (props.name !== "delete") {
+      const formValidator = new FormValidator(
+        config,
+        `.${props.name}-popup__form`
+      );
 
-    formValidator.enableValidation();
-    if (props.isOpen) {
-      const profileInfoFields = {
-        name: document.querySelector("#profile-name"),
-        about: document.querySelector("#profile-about"),
-      };
-      props.fillForm && fillForm();
-      formValidator.resetValidation();
+      formValidator.enableValidation();
+      if (props.isOpen) {
+        const profileInfoFields = {
+          name: document.querySelector("#profile-name"),
+          about: document.querySelector("#profile-about"),
+        };
+        props.fillForm && fillForm();
+        formValidator.resetValidation();
+      }
     }
   }, [props.isOpen]);
 
@@ -77,7 +79,27 @@ export default function PopupWithForm(props) {
           id={`${props.name}-popup__form`}
           noValidate
         >
-          {props.children}
+          <fieldset className="form__fieldset">
+            {props.children}
+            {props.name === "delete" ? (
+              <button
+                type="submit"
+                id="popup-submit"
+                className="delete-popup__confirm-button popup__button submit-button"
+                onClick={props.onSubmit}
+              >
+                Yes
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="form__save submit-button"
+                onClick={props.onSubmit}
+              >
+                Save
+              </button>
+            )}
+          </fieldset>
         </form>
       </div>
     </div>

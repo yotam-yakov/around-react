@@ -3,10 +3,22 @@ export default function Card(props) {
     props.onCardClick(props.card);
   }
 
+  function handleCardDelete() {
+    props.onCardDelete(props.card);
+  }
+
   return (
     <li className="elements__list-item">
       <article className="element">
-        <button type="button" className="element__remove-button"></button>
+        <button
+          type="button"
+          className={`element__remove-button ${
+            props.card.owner._id === props.userId
+              ? "element__remove-button_owner"
+              : ""
+          }`}
+          onClick={handleCardDelete}
+        ></button>
         <img
           src={props.card.link}
           alt="user uploaded"

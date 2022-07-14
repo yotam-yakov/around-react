@@ -71,7 +71,7 @@ class Api {
       method: "PATCH",
       headers: this._options.headers,
       body: JSON.stringify({
-        avatar: avatarUrl.avatar,
+        avatar: avatarUrl,
       }),
     })
       .then(this._verifyResponse)
