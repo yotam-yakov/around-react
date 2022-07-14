@@ -4,7 +4,7 @@ import {
   editProfileInputs,
   profileInfoFields,
   config,
-} from "../utils/constants";
+} from "./utils/constants";
 
 export default function PopupWithForm(props) {
   React.useEffect(() => {
