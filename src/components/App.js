@@ -13,6 +13,7 @@ function App() {
     React.useState(false);
   const [isAddPlacePopupOpen, toggleAddPlacePopup] = React.useState(false);
   const [isEditAvatarPopupOpen, toggleEditAvatarPopup] = React.useState(false);
+  const [selectedCard, selectCard] = React.useState(null);
 
   function handleEditAvatarClick() {
     toggleEditAvatarPopup(true);
@@ -30,6 +31,7 @@ function App() {
     toggleAddPlacePopup(false);
     toggleEditAvatarPopup(false);
     toggleEditProfilePopup(false);
+    selectCard(null);
   }
 
   return (
@@ -39,7 +41,7 @@ function App() {
         onEditProfileClick={handleEditProfileClick}
         onAddPlaceClick={handleAddPlaceClick}
         onEditAvatarClick={handleEditAvatarClick}
-        onCardClick=""
+        onCardClick={selectCard}
       />
       <Footer />
       <PopupWithForm
@@ -130,7 +132,7 @@ function App() {
           </button>
         </fieldset>
       </PopupWithForm>
-      <ImagePopup />
+      <ImagePopup name="image" card={selectedCard} onClose={closeAllPopups} />
       <PopupWithForm name="delete" title="Are You Sure?">
         <button
           type="submit"
