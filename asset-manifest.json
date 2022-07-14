@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/around-react/static/css/main.280d0a85.css",
+    "main.js": "/around-react/static/js/main.52891fa9.js",
+    "static/js/787.1c78f32b.chunk.js": "/around-react/static/js/787.1c78f32b.chunk.js",
+    "static/media/Inter-Medium.woff": "/around-react/static/media/Inter-Medium.9053572c46aeb4b16caa.woff",
+    "static/media/Inter-Black.woff": "/around-react/static/media/Inter-Black.c6938660eec019fefd68.woff",
+    "static/media/Inter-Regular.woff": "/around-react/static/media/Inter-Regular.8c206db99195777c6769.woff",
+    "static/media/Inter-Medium.woff2": "/around-react/static/media/Inter-Medium.293fd13dbca5a3e450ef.woff2",
+    "static/media/Inter-Black.woff2": "/around-react/static/media/Inter-Black.15ca31c0a2a68f76d2d1.woff2",
+    "static/media/Inter-Regular.woff2": "/around-react/static/media/Inter-Regular.c8ba52b05a9ef10f4758.woff2",
+    "static/media/around-logo.svg": "/around-react/static/media/around-logo.c75819857ff1599f0c50e9fc06373cd9.svg",
+    "static/media/like-button.svg": "/around-react/static/media/like-button.99043841e8bec6b9df21.svg",
+    "index.html": "/around-react/index.html",
+    "static/media/remove-button.svg": "/around-react/static/media/remove-button.ba43124316072f7a8629.svg",
+    "static/media/like-button_active.svg": "/around-react/static/media/like-button_active.f8482d28867cec189b08.svg",
+    "static/media/edit-button.svg": "/around-react/static/media/edit-button.af236f6cf67005f1d7aa.svg",
+    "static/media/avatar-edit-button.svg": "/around-react/static/media/avatar-edit-button.ae1a976ddb506239e9f0.svg",
+    "static/media/add-button.svg": "/around-react/static/media/add-button.bed8c136e13907f5eefb.svg",
+    "main.280d0a85.css.map": "/around-react/static/css/main.280d0a85.css.map",
+    "main.52891fa9.js.map": "/around-react/static/js/main.52891fa9.js.map",
+    "787.1c78f32b.chunk.js.map": "/around-react/static/js/787.1c78f32b.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.280d0a85.css",
+    "static/js/main.52891fa9.js"
+  ]
+}
