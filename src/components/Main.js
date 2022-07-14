@@ -1,16 +1,22 @@
 import React from "react";
 import api from "../utils/api";
+import Card from "./Card";
 
 export default function Main(props) {
   const [userName, setUserName] = React.useState("");
   const [userAbout, setUserAbout] = React.useState("");
   const [userAvatar, setUserAvatar] = React.useState("");
+  const [cards, updateCards] = React.useState([]);
 
-  api.getUserInfo().then((data) => {
-    setUserName(data.name);
-    setUserAbout(data.about);
-    setUserAvatar(data.avatar);
-  });
+  React.useEffect(() => {
+    api.getAllInfo().then((data) => {
+      console.log(data);
+      setUserName(data[0].name);
+      setUserAbout(data[0].about);
+      setUserAvatar(data[0].avatar);
+      updateCards(data[1]);
+    });
+  }, []);
 
   return (
     <main className="content">
@@ -50,7 +56,11 @@ export default function Main(props) {
         ></button>
       </section>
       <section className="elements">
-        <ul className="elements__list"></ul>
+        <ul className="elements__list">
+          {cards.map((card) => {
+            return <Card key={card._id} card={card} />;
+          })}
+        </ul>
       </section>
     </main>
   );

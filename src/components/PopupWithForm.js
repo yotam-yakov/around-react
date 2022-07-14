@@ -1,4 +1,16 @@
+import React from "react";
+
 export default function PopupWithForm(props) {
+  React.useEffect(() => {
+    document.addEventListener("mousedown", props.onClose);
+    document.addEventListener("keydown", props.onClose);
+
+    return () => {
+      document.removeEventListener("mousedown", props.onClose);
+      document.removeEventListener("keydown", props.onClose);
+    };
+  }, []);
+
   return (
     <div
       className={`${props.name}-popup popup ${props.isOpen && "popup_opened"}`}
