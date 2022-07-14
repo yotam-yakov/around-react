@@ -5,11 +5,10 @@ import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import api from "../utils/api";
-import { updateSaveButton } from "../utils/utils";
-import userInfo from "./UserInfo";
 import "../index.css";
 
 function App() {
+  //STATE VARIABLES
   const [isEditProfilePopupOpen, toggleEditProfilePopup] =
     React.useState(false);
   const [isEditAvatarPopupOpen, toggleEditAvatarPopup] = React.useState(false);
@@ -19,19 +18,8 @@ function App() {
   const [userInfo, setUserInfo] = React.useState({});
   const [cards, updateCards] = React.useState([]);
 
-  function loadServerData() {
-    api.getAllInfo().then((data) => {
-      setUserInfo({
-        ...userInfo,
-        name: data[0].name,
-        about: data[0].about,
-        avatar: data[0].avatar,
-        id: data[0]._id,
-      });
-      updateCards(data[1]);
-    });
-  }
-
+  //FUNCTIONS
+  //Popup opening handlers
   function handleEditProfileClick() {
     toggleEditProfilePopup(true);
   }
@@ -44,6 +32,7 @@ function App() {
     toggleAddPlacePopup(true);
   }
 
+  //Popup closing handler
   function closeAllPopups() {
     toggleAddPlacePopup(false);
     toggleEditAvatarPopup(false);
@@ -52,6 +41,7 @@ function App() {
     deleteCard(null);
   }
 
+  //Popup submit handlers
   function submitEditProfileForm(evt) {
     evt.preventDefault();
     updateSaveButton(true, ".edit-popup");
@@ -82,7 +72,6 @@ function App() {
     updateSaveButton(true, ".avatar-popup");
 
     const editAvatarFormInput = document.querySelector("#avatar-input").value;
-    console.log(editAvatarFormInput);
 
     api
       .editProfilePicture(editAvatarFormInput)
@@ -135,6 +124,7 @@ function App() {
       });
   }
 
+  //Other functions
   function handleLikeClick(cardId, method) {
     api
       .changeCardLike(cardId, method)
@@ -146,8 +136,36 @@ function App() {
       .catch((err) => api.reportError(err));
   }
 
+  function updateSaveButton(isSaving, formSelector) {
+    const form = document.querySelector(formSelector);
+    const submitButton = form.querySelector(".submit-button");
+    if (isSaving) {
+      submitButton.textContent = "Saving...";
+    } else {
+      if ((formSelector = ".delete-popup")) {
+        submitButton.textContent = "Yes";
+      } else {
+        submitButton.textContent = "Save";
+      }
+    }
+  }
+
+  function loadServerData() {
+    api.getAllInfo().then((data) => {
+      setUserInfo({
+        ...userInfo,
+        name: data[0].name,
+        about: data[0].about,
+        avatar: data[0].avatar,
+        id: data[0]._id,
+      });
+      updateCards(data[1]);
+    });
+  }
+
   return (
     <div className="page">
+      {/* Main page content */}
       <Header />
       <Main
         onEditProfileClick={handleEditProfileClick}
@@ -161,6 +179,8 @@ function App() {
         cardsList={cards}
       />
       <Footer />
+
+      {/* Popups */}
       <PopupWithForm
         name="edit"
         title="Edit Profile"
@@ -237,7 +257,6 @@ function App() {
         />
         <span className="link-input-error form__input-error"></span>
       </PopupWithForm>
-      <ImagePopup name="image" card={selectedCard} onClose={closeAllPopups} />
       <PopupWithForm
         name="delete"
         isOpen={deletedCard}
@@ -245,6 +264,7 @@ function App() {
         onClose={closeAllPopups}
         title="Are You Sure?"
       ></PopupWithForm>
+      <ImagePopup name="image" card={selectedCard} onClose={closeAllPopups} />
     </div>
   );
 }

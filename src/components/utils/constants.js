@@ -10,10 +10,6 @@ export const editProfileInputs = {
   about: document.querySelector("#about-input"),
 };
 
-// Validator consts
-const validatorsList = [];
-const formsList = Array.from(document.querySelectorAll(".form"));
-
 // Initial function consts
 export const config = {
   inputSelector: ".form__input",

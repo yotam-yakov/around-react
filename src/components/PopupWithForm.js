@@ -1,6 +1,10 @@
 import React from "react";
 import FormValidator from "./FormValidator";
-import { config } from "../utils/constants";
+import {
+  editProfileInputs,
+  profileInfoFields,
+  config,
+} from "../utils/constants";
 
 export default function PopupWithForm(props) {
   React.useEffect(() => {
@@ -12,10 +16,6 @@ export default function PopupWithForm(props) {
 
       formValidator.enableValidation();
       if (props.isOpen) {
-        const profileInfoFields = {
-          name: document.querySelector("#profile-name"),
-          about: document.querySelector("#profile-about"),
-        };
         props.fillForm && fillForm();
         formValidator.resetValidation();
       }
@@ -46,15 +46,6 @@ export default function PopupWithForm(props) {
   }
 
   function fillForm() {
-    let editProfileInputs = {
-      name: document.querySelector("#name-input"),
-      about: document.querySelector("#about-input"),
-    };
-    let profileInfoFields = {
-      name: document.querySelector("#profile-name"),
-      about: document.querySelector("#profile-about"),
-    };
-
     editProfileInputs.name.value = profileInfoFields.name.innerHTML;
     editProfileInputs.about.value = profileInfoFields.about.innerHTML;
   }
