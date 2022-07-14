@@ -1,19 +1,67 @@
 import React from "react";
+import FormValidator from "./FormValidator";
+import { config } from "../utils/constants";
 
 export default function PopupWithForm(props) {
   React.useEffect(() => {
-    document.addEventListener("mousedown", props.onClose);
-    document.addEventListener("keydown", props.onClose);
+    const formValidator = new FormValidator(
+      config,
+      `.${props.name}-popup__form`
+    );
+
+    formValidator.enableValidation();
+    if (props.isOpen) {
+      const profileInfoFields = {
+        name: document.querySelector("#profile-name"),
+        about: document.querySelector("#profile-about"),
+      };
+      props.fillForm && fillForm();
+      formValidator.resetValidation();
+    }
+  }, [props.isOpen]);
+
+  React.useEffect(() => {
+    document.addEventListener("mousedown", handleClickClose);
+    document.addEventListener("keydown", handleKeyClose);
 
     return () => {
-      document.removeEventListener("mousedown", props.onClose);
-      document.removeEventListener("keydown", props.onClose);
+      document.removeEventListener("mousedown", handleClickClose);
+      document.removeEventListener("keydown", handleKeyClose);
     };
   }, []);
 
+  function handleClickClose(evt) {
+    const popup = document.querySelector(`.${props.name}-popup`);
+    if (evt.target === popup) {
+      props.onClose();
+    }
+  }
+
+  function handleKeyClose(evt) {
+    if (evt.key === "Escape") {
+      props.onClose();
+    }
+  }
+
+  function fillForm() {
+    let editProfileInputs = {
+      name: document.querySelector("#name-input"),
+      about: document.querySelector("#about-input"),
+    };
+    let profileInfoFields = {
+      name: document.querySelector("#profile-name"),
+      about: document.querySelector("#profile-about"),
+    };
+
+    editProfileInputs.name.value = profileInfoFields.name.innerHTML;
+    editProfileInputs.about.value = profileInfoFields.about.innerHTML;
+  }
+
   return (
     <div
-      className={`${props.name}-popup popup ${props.isOpen && "popup_opened"}`}
+      className={`${props.name}-popup popup ${
+        props.isOpen ? "popup_opened" : ""
+      }`}
     >
       <div className={`${props.name}-popup__container popup__container`}>
         <button

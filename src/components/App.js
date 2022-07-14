@@ -4,6 +4,8 @@ import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
+import api from "../utils/api";
+import { editProfileInputs, profileInfoFields } from "../utils/constants";
 import "../index.css";
 
 function App() {
@@ -45,6 +47,7 @@ function App() {
         title="Edit Profile"
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
+        fillForm={true}
       >
         <fieldset className="form__fieldset">
           <input
