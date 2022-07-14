@@ -135,6 +135,17 @@ function App() {
       });
   }
 
+  function handleLikeClick(cardId, method) {
+    api
+      .changeCardLike(cardId, method)
+      .then(() => {
+        api.loadCards().then((data) => {
+          updateCards(data);
+        });
+      })
+      .catch((err) => api.reportError(err));
+  }
+
   return (
     <div className="page">
       <Header />
@@ -144,6 +155,7 @@ function App() {
         onEditAvatarClick={handleEditAvatarClick}
         onCardClick={selectCard}
         onCardDelete={deleteCard}
+        onLikeClick={handleLikeClick}
         onMount={loadServerData}
         userData={userInfo}
         cardsList={cards}
