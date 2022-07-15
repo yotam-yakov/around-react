@@ -2,21 +2,12 @@ import React from "react";
 
 export default function ImagePopup(props) {
   React.useEffect(() => {
-    document.addEventListener("mousedown", handleClickClose);
     document.addEventListener("keydown", handleKeyClose);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickClose);
       document.removeEventListener("keydown", handleKeyClose);
     };
   }, []);
-
-  function handleClickClose(evt) {
-    const popup = document.querySelector(`.${props.name}-popup`);
-    if (evt.target === popup) {
-      props.onClose();
-    }
-  }
 
   function handleKeyClose(evt) {
     if (evt.key === "Escape") {
@@ -25,8 +16,14 @@ export default function ImagePopup(props) {
   }
 
   return (
-    <div className={`image-popup popup ${props.card ? "popup_opened" : ""}`}>
-      <div className="image-popup__container">
+    <div
+      className={`image-popup popup ${props.card ? "popup_opened" : ""}`}
+      onClick={props.onClose}
+    >
+      <div
+        className="image-popup__container"
+        onClick={(evt) => evt.stopPropagation()}
+      >
         <button
           type="button"
           className="image-popup__close-button close-button"

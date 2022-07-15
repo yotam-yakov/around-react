@@ -9,38 +9,66 @@ import "../index.css";
 
 function App() {
   //STATE VARIABLES
-  const [isEditProfilePopupOpen, toggleEditProfilePopup] =
+  //Popups toggles
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
-  const [isEditAvatarPopupOpen, toggleEditAvatarPopup] = React.useState(false);
-  const [isAddPlacePopupOpen, toggleAddPlacePopup] = React.useState(false);
-  const [selectedCard, selectCard] = React.useState(null);
-  const [deletedCard, deleteCard] = React.useState(null);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
+    React.useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  //Card selectors
+  const [selectedCard, setSelectedCard] = React.useState(null);
+  const [deletedCard, setDeletedCard] = React.useState(null);
+  //Server data
   const [userInfo, setUserInfo] = React.useState({});
-  const [cards, updateCards] = React.useState([]);
+  const [cards, setCards] = React.useState([]);
+  //Inputs states
+  const [formNameInput, setFormNameInput] = React.useState({
+    input: { value: userInfo.name },
+  });
+  const [formAboutInput, setFormAboutInput] = React.useState({});
+  const [formTitleInput, setFormTitleInput] = React.useState({});
+  const [formLinkInput, setFormLinkInput] = React.useState({});
+  const [formAvatarInput, setFormAvatarInput] = React.useState({});
+  //Edit form states
+  const [profileName, setProfileName] = React.useState("");
+  const [profileAbout, setProfileAbout] = React.useState("");
 
   //FUNCTIONS
   //Popup opening handlers
   function handleEditProfileClick() {
-    toggleEditProfilePopup(true);
+    setIsEditProfilePopupOpen(true);
   }
 
   function handleEditAvatarClick() {
-    toggleEditAvatarPopup(true);
+    setIsEditAvatarPopupOpen(true);
   }
 
   function handleAddPlaceClick() {
-    toggleAddPlacePopup(true);
+    setIsAddPlacePopupOpen(true);
   }
 
   //Popup closing handler
   function closeAllPopups() {
-    toggleAddPlacePopup(false);
-    toggleEditAvatarPopup(false);
-    toggleEditProfilePopup(false);
-    selectCard(null);
-    deleteCard(null);
+    setIsAddPlacePopupOpen(false);
+    setIsEditAvatarPopupOpen(false);
+    setIsEditProfilePopupOpen(false);
+    setSelectedCard(null);
+    setDeletedCard(null);
+
+    resetFormValues();
   }
 
+  function resetFormValues() {
+    setFormNameInput({});
+    setFormAboutInput({});
+    setFormAvatarInput({});
+    setFormTitleInput({});
+    setFormLinkInput({});
+
+    document.querySelectorAll(".form").forEach((form) => {
+      form.reset();
+    });
+  }
   //Popup submit handlers
   function submitEditProfileForm(evt) {
     evt.preventDefault();
@@ -59,6 +87,8 @@ function App() {
           name: userParameters.name,
           about: userParameters.about,
         });
+        setProfileName(userParameters.name);
+        setProfileAbout(userParameters.about);
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
@@ -77,6 +107,8 @@ function App() {
       .editProfilePicture(editAvatarFormInput)
       .then((userParameters) => {
         setUserInfo({ ...userInfo, avatar: userParameters.avatar });
+        setProfileName(userParameters.name);
+        setProfileAbout(userParameters.about);
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
@@ -97,7 +129,7 @@ function App() {
     api
       .addNewCard(addCardFormInputs)
       .then((newCard) => {
-        updateCards([newCard, ...cards]);
+        setCards([newCard, ...cards]);
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
@@ -114,7 +146,7 @@ function App() {
       .deleteCard(deletedCard._id)
       .then(() => {
         api.loadCards().then((data) => {
-          updateCards(data);
+          setCards(data);
         });
       })
       .catch((err) => api.reportError(err))
@@ -130,10 +162,71 @@ function App() {
       .changeCardLike(cardId, method)
       .then(() => {
         api.loadCards().then((data) => {
-          updateCards(data);
+          setCards(data);
         });
       })
       .catch((err) => api.reportError(err));
+  }
+
+  function updateInputs(evt) {
+    const inputProps = {
+      input: evt.target,
+      valid: evt.target.validity.valid,
+      error: evt.target.validationMessage,
+    };
+    switch (evt.target.id) {
+      case "name-input":
+        setFormNameInput({
+          ...formNameInput,
+          input: inputProps.input,
+          valid: inputProps.valid,
+          error: inputProps.error,
+        });
+        setProfileName(inputProps.input.value);
+        break;
+      case "about-input":
+        setFormAboutInput({
+          ...formAboutInput,
+          input: inputProps.input,
+          valid: inputProps.valid,
+          error: inputProps.error,
+        });
+        setProfileAbout(inputProps.input.value);
+        break;
+      case "title-input":
+        setFormTitleInput({
+          ...formTitleInput,
+          input: inputProps.input,
+          valid: inputProps.valid,
+          error: inputProps.error,
+        });
+        break;
+      case "link-input":
+        setFormLinkInput({
+          ...formLinkInput,
+          input: inputProps.input,
+          valid: inputProps.valid,
+          error: inputProps.error,
+        });
+        break;
+      case "avatar-input":
+        setFormAvatarInput({
+          ...formAvatarInput,
+          input: inputProps.input,
+          valid: inputProps.valid,
+          error: inputProps.error,
+        });
+        break;
+    }
+  }
+
+  function isFormValid(...inputs) {
+    for (let i = 0; i < inputs.length; i++) {
+      if (!inputs[i].valid) {
+        return false;
+      }
+    }
+    return true;
   }
 
   function updateSaveButton(isSaving, formSelector) {
@@ -142,7 +235,7 @@ function App() {
     if (isSaving) {
       submitButton.textContent = "Saving...";
     } else {
-      if ((formSelector = ".delete-popup")) {
+      if (formSelector === ".delete-popup") {
         submitButton.textContent = "Yes";
       } else {
         submitButton.textContent = "Save";
@@ -151,16 +244,21 @@ function App() {
   }
 
   function loadServerData() {
-    api.getAllInfo().then((data) => {
-      setUserInfo({
-        ...userInfo,
-        name: data[0].name,
-        about: data[0].about,
-        avatar: data[0].avatar,
-        id: data[0]._id,
-      });
-      updateCards(data[1]);
-    });
+    api
+      .getAllInfo()
+      .then(([userData, cards]) => {
+        setUserInfo({
+          ...userInfo,
+          name: userData.name,
+          about: userData.about,
+          avatar: userData.avatar,
+          id: userData._id,
+        });
+        setProfileName(userData.name);
+        setProfileAbout(userData.about);
+        setCards(cards);
+      })
+      .catch((err) => api.reportError(err));
   }
 
   return (
@@ -171,8 +269,8 @@ function App() {
         onEditProfileClick={handleEditProfileClick}
         onAddPlaceClick={handleAddPlaceClick}
         onEditAvatarClick={handleEditAvatarClick}
-        onCardClick={selectCard}
-        onCardDelete={deleteCard}
+        onCardClick={setSelectedCard}
+        onCardDelete={setDeletedCard}
         onLikeClick={handleLikeClick}
         onMount={loadServerData}
         userData={userInfo}
@@ -186,10 +284,10 @@ function App() {
         title="Edit Profile"
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-        onSubmit={submitEditProfileForm}
-        fillForm={true}
+        profileName={profileName}
       >
         <input
+          value={profileName}
           type="text"
           name="name"
           id="name-input"
@@ -197,10 +295,18 @@ function App() {
           minLength="2"
           maxLength="40"
           required
-          className="form__input"
+          className={`form__input ${
+            formNameInput.valid == false && "form__input_invalid"
+          }`}
+          onChange={updateInputs}
         />
-        <span className="name-input-error form__input-error"></span>
+        {!formNameInput.valid && (
+          <span className="name-input-error form__input-error">
+            {formNameInput.error}
+          </span>
+        )}
         <input
+          value={profileAbout}
           type="text"
           name="about"
           id="about-input"
@@ -208,9 +314,23 @@ function App() {
           minLength="2"
           maxLength="200"
           required
-          className="form__input"
+          className={`form__input ${
+            formAboutInput.valid == false && "form__input_invalid"
+          }`}
+          onChange={updateInputs}
         />
-        <span className="about-input-error form__input-error"></span>
+        {!formAboutInput.valid && (
+          <span className="about-input-error form__input-error">
+            {formAboutInput.error}
+          </span>
+        )}
+        <button
+          type="submit"
+          className="form__save submit-button"
+          onClick={submitEditProfileForm}
+        >
+          Save
+        </button>
       </PopupWithForm>
       <PopupWithForm
         name="avatar"
@@ -225,16 +345,32 @@ function App() {
           id="avatar-input"
           placeholder="Image link"
           required
-          className="form__input"
+          className={`form__input ${
+            formAvatarInput.valid == false && "form__input_invalid"
+          }`}
+          onChange={updateInputs}
         />
-        <span className="avatar-input-error form__input-error"></span>
+        {!formAvatarInput.valid && (
+          <span className="avatar-input-error form__input-error">
+            {formAvatarInput.error}
+          </span>
+        )}
+        <button
+          type="submit"
+          className={`form__save submit-button ${
+            !formAvatarInput.valid && "form__save_disabled"
+          }`}
+          onClick={submitEditAvatarForm}
+          disabled={!formAvatarInput.valid}
+        >
+          Save
+        </button>
       </PopupWithForm>
       <PopupWithForm
         name="add"
         title="New Place"
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
-        onSubmit={submitAddPlaceForm}
       >
         <input
           type="text"
@@ -244,26 +380,60 @@ function App() {
           minLength="1"
           maxLength="30"
           required
-          className="form__input"
+          className={`form__input ${
+            formTitleInput.valid == false && "form__input_invalid"
+          }`}
+          onChange={updateInputs}
         />
-        <span className="title-input-error form__input-error"></span>
+        {!formTitleInput.valid && (
+          <span className="title-input-error form__input-error">
+            {formTitleInput.error}
+          </span>
+        )}
         <input
           type="url"
           name="link"
           id="link-input"
           placeholder="Image link"
           required
-          className="form__input"
+          className={`form__input ${
+            formLinkInput.valid == false && "form__input_invalid"
+          }`}
+          onChange={updateInputs}
         />
-        <span className="link-input-error form__input-error"></span>
+        {!formLinkInput.valid && (
+          <span className="link-input-error form__input-error">
+            {formLinkInput.error}
+          </span>
+        )}
+        <button
+          type="submit"
+          className={`form__save submit-button ${
+            isFormValid(formTitleInput, formLinkInput)
+              ? ""
+              : "form__save_disabled"
+          }`}
+          onClick={submitAddPlaceForm}
+          disabled={isFormValid(formTitleInput, formLinkInput)}
+        >
+          Save
+        </button>
       </PopupWithForm>
       <PopupWithForm
         name="delete"
         isOpen={deletedCard}
         onSubmit={submitDeleteCardForm}
-        onClose={closeAllPopups}
         title="Are You Sure?"
-      ></PopupWithForm>
+      >
+        <button
+          type="submit"
+          id="popup-submit"
+          className="delete-popup__confirm-button popup__button submit-button"
+          onClick={submitDeleteCardForm}
+        >
+          Yes
+        </button>
+      </PopupWithForm>
       <ImagePopup name="image" card={selectedCard} onClose={closeAllPopups} />
     </div>
   );
