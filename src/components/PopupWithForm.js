@@ -1,10 +1,4 @@
 import React from "react";
-import FormValidator from "./FormValidator";
-import {
-  editProfileInputs,
-  profileInfoFields,
-  config,
-} from "./utils/constants";
 
 export default function PopupWithForm(props) {
   React.useEffect(() => {
@@ -14,6 +8,20 @@ export default function PopupWithForm(props) {
       document.removeEventListener("keydown", handleKeyClose);
     };
   }, []);
+
+  React.useEffect(() => {
+    props.formValidator !== undefined && props.formValidator(props.name);
+  }, [props.formInputs]);
+
+  React.useEffect(() => {
+    if (props.formInputsSet) {
+      props.formInputsSet[0](props.userInfo.name);
+      props.formInputsSet[1](props.userInfo.about);
+    }
+    props.validateForm !== undefined && props.validateForm(props.formIsValid);
+    props.formIsValid &&
+      props.setFormInputs.forEach((setInput) => setInput({ valid: true }));
+  }, [props.isOpen]);
 
   function handleKeyClose(evt) {
     if (evt.key === "Escape") {
@@ -43,6 +51,7 @@ export default function PopupWithForm(props) {
         <form
           className={`form ${props.name}-popup__form`}
           id={`${props.name}-popup__form`}
+          onSubmit={props.onSubmit}
           noValidate
         >
           <fieldset className="form__fieldset">{props.children}</fieldset>

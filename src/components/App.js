@@ -32,6 +32,15 @@ function App() {
   //Edit form states
   const [profileName, setProfileName] = React.useState("");
   const [profileAbout, setProfileAbout] = React.useState("");
+  //Avatar form state
+  const [avatarLink, setAvatarLink] = React.useState("");
+  //Add form states
+  const [cardTitle, setCardTitle] = React.useState("");
+  const [cardLink, setCardLink] = React.useState("");
+  //Loading state
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isEditFormValid, setIsEditFormValid] = React.useState();
+  const [isAddFormValid, setIsAddFormValid] = React.useState();
 
   //FUNCTIONS
   //Popup opening handlers
@@ -65,22 +74,20 @@ function App() {
     setFormTitleInput({});
     setFormLinkInput({});
 
-    document.querySelectorAll(".form").forEach((form) => {
-      form.reset();
-    });
+    setAvatarLink("");
+    setCardTitle("");
+    setCardLink("");
   }
   //Popup submit handlers
   function submitEditProfileForm(evt) {
     evt.preventDefault();
-    updateSaveButton(true, ".edit-popup");
-
-    const editProfileFormInputs = {
-      name: document.querySelector("#name-input").value,
-      about: document.querySelector("#about-input").value,
-    };
+    setIsLoading(true);
 
     api
-      .editProfileInfo(editProfileFormInputs)
+      .editProfileInfo({
+        name: profileName,
+        about: profileAbout,
+      })
       .then((userParameters) => {
         setUserInfo({
           ...userInfo,
@@ -92,19 +99,17 @@ function App() {
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
-        updateSaveButton(false, ".edit-popup");
+        setIsLoading(false);
         closeAllPopups();
       });
   }
 
   function submitEditAvatarForm(evt) {
     evt.preventDefault();
-    updateSaveButton(true, ".avatar-popup");
-
-    const editAvatarFormInput = document.querySelector("#avatar-input").value;
+    setIsLoading(true);
 
     api
-      .editProfilePicture(editAvatarFormInput)
+      .editProfilePicture(formAvatarInput.input.value)
       .then((userParameters) => {
         setUserInfo({ ...userInfo, avatar: userParameters.avatar });
         setProfileName(userParameters.name);
@@ -112,35 +117,30 @@ function App() {
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
-        updateSaveButton(false, ".avatar-popup");
+        setIsLoading(false);
         closeAllPopups();
       });
   }
 
   function submitAddPlaceForm(evt) {
     evt.preventDefault();
-    updateSaveButton(true, ".add-popup");
-
-    const addCardFormInputs = {
-      title: document.querySelector("#title-input").value,
-      link: document.querySelector("#link-input").value,
-    };
+    setIsLoading(true);
 
     api
-      .addNewCard(addCardFormInputs)
+      .addNewCard({ title: cardTitle, link: cardLink })
       .then((newCard) => {
         setCards([newCard, ...cards]);
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
-        updateSaveButton(false, ".add-popup");
+        setIsLoading(false);
         closeAllPopups();
       });
   }
 
   function submitDeleteCardForm(evt) {
     evt.preventDefault();
-    updateSaveButton(true, ".delete-popup");
+    setIsLoading(true);
 
     api
       .deleteCard(deletedCard._id)
@@ -151,7 +151,7 @@ function App() {
       })
       .catch((err) => api.reportError(err))
       .finally(() => {
-        updateSaveButton(false, ".delete-popup");
+        setIsLoading(false);
         closeAllPopups();
       });
   }
@@ -183,6 +183,7 @@ function App() {
           error: inputProps.error,
         });
         setProfileName(inputProps.input.value);
+        checkIfFormValid("edit");
         break;
       case "about-input":
         setFormAboutInput({
@@ -192,6 +193,7 @@ function App() {
           error: inputProps.error,
         });
         setProfileAbout(inputProps.input.value);
+        checkIfFormValid("edit");
         break;
       case "title-input":
         setFormTitleInput({
@@ -200,6 +202,8 @@ function App() {
           valid: inputProps.valid,
           error: inputProps.error,
         });
+        setCardTitle(inputProps.input.value);
+        checkIfFormValid("add");
         break;
       case "link-input":
         setFormLinkInput({
@@ -208,6 +212,8 @@ function App() {
           valid: inputProps.valid,
           error: inputProps.error,
         });
+        setCardLink(inputProps.input.value);
+        checkIfFormValid("add");
         break;
       case "avatar-input":
         setFormAvatarInput({
@@ -216,30 +222,42 @@ function App() {
           valid: inputProps.valid,
           error: inputProps.error,
         });
+        setAvatarLink(inputProps.input.value);
         break;
     }
   }
 
-  function isFormValid(...inputs) {
+  function checkIfFormValid(name) {
+    let inputs = [];
+
+    switch (name) {
+      case "edit":
+        inputs = [formNameInput, formAboutInput];
+        break;
+      case "add":
+        inputs = [formTitleInput, formLinkInput];
+    }
+
     for (let i = 0; i < inputs.length; i++) {
       if (!inputs[i].valid) {
-        return false;
+        switch (name) {
+          case "edit":
+            setIsEditFormValid(false);
+            break;
+          case "add":
+            setIsAddFormValid(false);
+            break;
+        }
+        return;
       }
     }
-    return true;
-  }
-
-  function updateSaveButton(isSaving, formSelector) {
-    const form = document.querySelector(formSelector);
-    const submitButton = form.querySelector(".submit-button");
-    if (isSaving) {
-      submitButton.textContent = "Saving...";
-    } else {
-      if (formSelector === ".delete-popup") {
-        submitButton.textContent = "Yes";
-      } else {
-        submitButton.textContent = "Save";
-      }
+    switch (name) {
+      case "edit":
+        setIsEditFormValid(true);
+        break;
+      case "add":
+        setIsAddFormValid(true);
+        break;
     }
   }
 
@@ -284,7 +302,13 @@ function App() {
         title="Edit Profile"
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
-        profileName={profileName}
+        onSubmit={submitEditProfileForm}
+        userInfo={userInfo}
+        formIsValid={true}
+        formInputs={[formNameInput, formAboutInput]}
+        setFormInputs={[setFormNameInput, setFormAboutInput]}
+        validateForm={setIsEditFormValid}
+        formInputsSet={[setProfileName, setProfileAbout]}
       >
         <input
           value={profileName}
@@ -326,10 +350,12 @@ function App() {
         )}
         <button
           type="submit"
-          className="form__save submit-button"
-          onClick={submitEditProfileForm}
+          className={`form__save submit-button ${
+            isEditFormValid ? "" : "form__save_disabled"
+          }`}
+          disabled={!isEditFormValid}
         >
-          Save
+          {isLoading ? "Saving..." : "Save"}
         </button>
       </PopupWithForm>
       <PopupWithForm
@@ -340,6 +366,7 @@ function App() {
         onSubmit={submitEditAvatarForm}
       >
         <input
+          value={avatarLink}
           type="url"
           name="avatar"
           id="avatar-input"
@@ -360,10 +387,9 @@ function App() {
           className={`form__save submit-button ${
             !formAvatarInput.valid && "form__save_disabled"
           }`}
-          onClick={submitEditAvatarForm}
           disabled={!formAvatarInput.valid}
         >
-          Save
+          {isLoading ? "Saving..." : "Save"}
         </button>
       </PopupWithForm>
       <PopupWithForm
@@ -371,8 +397,14 @@ function App() {
         title="New Place"
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
+        onSubmit={submitAddPlaceForm}
+        formValidator={checkIfFormValid}
+        formInputs={[formTitleInput, formLinkInput]}
+        formIsValid={false}
+        validateForm={setIsAddFormValid}
       >
         <input
+          value={cardTitle}
           type="text"
           name="title"
           id="title-input"
@@ -391,6 +423,7 @@ function App() {
           </span>
         )}
         <input
+          value={cardLink}
           type="url"
           name="link"
           id="link-input"
@@ -409,14 +442,11 @@ function App() {
         <button
           type="submit"
           className={`form__save submit-button ${
-            isFormValid(formTitleInput, formLinkInput)
-              ? ""
-              : "form__save_disabled"
+            isAddFormValid ? "" : "form__save_disabled"
           }`}
-          onClick={submitAddPlaceForm}
-          disabled={isFormValid(formTitleInput, formLinkInput)}
+          disabled={!isAddFormValid}
         >
-          Save
+          {isLoading ? "Saving..." : "Save"}
         </button>
       </PopupWithForm>
       <PopupWithForm
@@ -429,9 +459,8 @@ function App() {
           type="submit"
           id="popup-submit"
           className="delete-popup__confirm-button popup__button submit-button"
-          onClick={submitDeleteCardForm}
         >
-          Yes
+          {isLoading ? "Deleting..." : "Yes"}
         </button>
       </PopupWithForm>
       <ImagePopup name="image" card={selectedCard} onClose={closeAllPopups} />
