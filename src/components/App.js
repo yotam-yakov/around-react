@@ -39,8 +39,8 @@ function App() {
   const [cardLink, setCardLink] = React.useState("");
   //Loading state
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isEditFormValid, setIsEditFormValid] = React.useState();
-  const [isAddFormValid, setIsAddFormValid] = React.useState();
+  const [isEditFormValid, setIsEditFormValid] = React.useState(true);
+  const [isAddFormValid, setIsAddFormValid] = React.useState(false);
 
   //FUNCTIONS
   //Popup opening handlers
@@ -311,7 +311,7 @@ function App() {
         formInputsSet={[setProfileName, setProfileAbout]}
       >
         <input
-          value={profileName}
+          value={profileName || ""}
           type="text"
           name="name"
           id="name-input"
@@ -330,7 +330,7 @@ function App() {
           </span>
         )}
         <input
-          value={profileAbout}
+          value={profileAbout || ""}
           type="text"
           name="about"
           id="about-input"
@@ -366,7 +366,7 @@ function App() {
         onSubmit={submitEditAvatarForm}
       >
         <input
-          value={avatarLink}
+          value={avatarLink || ""}
           type="url"
           name="avatar"
           id="avatar-input"
@@ -404,7 +404,7 @@ function App() {
         validateForm={setIsAddFormValid}
       >
         <input
-          value={cardTitle}
+          value={cardTitle || ""}
           type="text"
           name="title"
           id="title-input"
@@ -423,7 +423,7 @@ function App() {
           </span>
         )}
         <input
-          value={cardLink}
+          value={cardLink || ""}
           type="url"
           name="link"
           id="link-input"
