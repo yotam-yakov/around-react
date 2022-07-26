@@ -2,6 +2,7 @@ import React from "react";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
+import EditProfilePopup from "./EditProfilePopup";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import api from "./utils/api";
@@ -23,10 +24,7 @@ function App() {
   const [cards, setCards] = React.useState([]);
   const [currentUser, setCurrentUser] = React.useState({});
   //Inputs states
-  const [formNameInput, setFormNameInput] = React.useState({
-    input: { value: currentUser.name },
-  });
-  const [formAboutInput, setFormAboutInput] = React.useState({});
+
   const [formTitleInput, setFormTitleInput] = React.useState({});
   const [formLinkInput, setFormLinkInput] = React.useState({});
   const [formAvatarInput, setFormAvatarInput] = React.useState({});
@@ -40,8 +38,8 @@ function App() {
   const [cardLink, setCardLink] = React.useState("");
   //Loading state
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isEditFormValid, setIsEditFormValid] = React.useState(true);
   const [isAddFormValid, setIsAddFormValid] = React.useState(false);
+  const [isEditFormValid, setIsEditFormValid] = React.useState(true);
 
   //FUNCTIONS
   //Popup opening handlers
@@ -69,8 +67,6 @@ function App() {
   }
 
   function resetFormValues() {
-    setFormNameInput({});
-    setFormAboutInput({});
     setFormAvatarInput({});
     setFormTitleInput({});
     setFormLinkInput({});
@@ -80,31 +76,6 @@ function App() {
     setCardLink("");
   }
   //Popup submit handlers
-  function submitEditProfileForm(evt) {
-    evt.preventDefault();
-    setIsLoading(true);
-
-    api
-      .editProfileInfo({
-        name: profileName,
-        about: profileAbout,
-      })
-      .then((userInfo) => {
-        setCurrentUser({
-          ...currentUser,
-          name: userInfo.name,
-          about: userInfo.about,
-        });
-        setProfileName(userInfo.name);
-        setProfileAbout(userInfo.about);
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
-        closeAllPopups();
-      });
-  }
-
   function submitEditAvatarForm(evt) {
     evt.preventDefault();
     setIsLoading(true);
@@ -165,26 +136,26 @@ function App() {
       error: evt.target.validationMessage,
     };
     switch (evt.target.id) {
-      case "name-input":
-        setFormNameInput({
-          ...formNameInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setProfileName(inputProps.input.value);
-        checkIfFormValid("edit");
-        break;
-      case "about-input":
-        setFormAboutInput({
-          ...formAboutInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setProfileAbout(inputProps.input.value);
-        checkIfFormValid("edit");
-        break;
+      // case "name-input":
+      //   setFormNameInput({
+      //     ...formNameInput,
+      //     input: inputProps.input,
+      //     valid: inputProps.valid,
+      //     error: inputProps.error,
+      //   });
+      //   setProfileName(inputProps.input.value);
+      //   checkIfFormValid("edit");
+      //   break;
+      // case "about-input":
+      //   setFormAboutInput({
+      //     ...formAboutInput,
+      //     input: inputProps.input,
+      //     valid: inputProps.valid,
+      //     error: inputProps.error,
+      //   });
+      //   setProfileAbout(inputProps.input.value);
+      //   checkIfFormValid("edit");
+      //   break;
       case "title-input":
         setFormTitleInput({
           ...formTitleInput,
@@ -217,17 +188,10 @@ function App() {
     }
   }
 
-  function checkIfFormValid(name) {
-    let inputs = [];
-
-    switch (name) {
-      case "edit":
-        inputs = [formNameInput, formAboutInput];
-        break;
-      case "add":
-        inputs = [formTitleInput, formLinkInput];
+  function checkIfFormValid(name, inputs) {
+    if (!inputs) {
+      inputs = [formTitleInput, formLinkInput];
     }
-
     for (let i = 0; i < inputs.length; i++) {
       if (!inputs[i].valid) {
         switch (name) {
@@ -286,66 +250,14 @@ function App() {
         <Footer />
 
         {/* Popups */}
-        <PopupWithForm
-          name="edit"
-          title="Edit Profile"
+        <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-          onSubmit={submitEditProfileForm}
-          formIsValid={true}
-          formInputs={[formNameInput, formAboutInput]}
-          setFormInputs={[setFormNameInput, setFormAboutInput]}
-          validateForm={setIsEditFormValid}
-          formInputsSet={[setProfileName, setProfileAbout]}
-        >
-          <input
-            value={profileName || ""}
-            type="text"
-            name="name"
-            id="name-input"
-            placeholder="Name"
-            minLength="2"
-            maxLength="40"
-            required
-            className={`form__input ${
-              formNameInput.valid == false && "form__input_invalid"
-            }`}
-            onChange={updateInputs}
-          />
-          {!formNameInput.valid && (
-            <span className="name-input-error form__input-error">
-              {formNameInput.error}
-            </span>
-          )}
-          <input
-            value={profileAbout || ""}
-            type="text"
-            name="about"
-            id="about-input"
-            placeholder="About me"
-            minLength="2"
-            maxLength="200"
-            required
-            className={`form__input ${
-              formAboutInput.valid == false && "form__input_invalid"
-            }`}
-            onChange={updateInputs}
-          />
-          {!formAboutInput.valid && (
-            <span className="about-input-error form__input-error">
-              {formAboutInput.error}
-            </span>
-          )}
-          <button
-            type="submit"
-            className={`form__save submit-button ${
-              isEditFormValid ? "" : "form__save_disabled"
-            }`}
-            disabled={!isEditFormValid}
-          >
-            {isLoading ? "Saving..." : "Save"}
-          </button>
-        </PopupWithForm>
+          updateUser={setCurrentUser}
+          checkValidity={checkIfFormValid}
+          formValidity={isEditFormValid}
+          setFormValidity={setIsEditFormValid}
+        />
         <PopupWithForm
           name="avatar"
           title="Change Profile Picture"
