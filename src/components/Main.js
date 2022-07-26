@@ -1,9 +1,21 @@
 import React from "react";
 import Card from "./Card";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import api from "./utils/api";
 
 export default function Main(props) {
   const currentUser = React.useContext(CurrentUserContext);
+
+  function handleLikeClick(cardId, method) {
+    api
+      .changeCardLike(cardId, method)
+      .then(() => {
+        api.loadCards().then((data) => {
+          props.setCards(data);
+        });
+      })
+      .catch((err) => api.reportError(err));
+  }
 
   return (
     <main className="content">
@@ -52,7 +64,7 @@ export default function Main(props) {
                   card={card}
                   onCardClick={props.onCardClick}
                   onCardDelete={props.onCardDelete}
-                  onLikeClick={props.onLikeClick}
+                  onLikeClick={handleLikeClick}
                 />
               );
             })}

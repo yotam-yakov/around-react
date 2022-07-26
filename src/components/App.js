@@ -146,8 +146,8 @@ function App() {
     api
       .deleteCard(deletedCard._id)
       .then(() => {
-        api.loadCards().then((data) => {
-          setCards(data);
+        api.loadCards().then(() => {
+          setCards(cards.filter((card) => card._id !== deletedCard._id));
         });
       })
       .catch((err) => api.reportError(err))
@@ -158,17 +158,6 @@ function App() {
   }
 
   //Other functions
-  function handleLikeClick(cardId, method) {
-    api
-      .changeCardLike(cardId, method)
-      .then(() => {
-        api.loadCards().then((data) => {
-          setCards(data);
-        });
-      })
-      .catch((err) => api.reportError(err));
-  }
-
   function updateInputs(evt) {
     const inputProps = {
       input: evt.target,
@@ -291,7 +280,7 @@ function App() {
           onEditAvatarClick={handleEditAvatarClick}
           onCardClick={setSelectedCard}
           onCardDelete={setDeletedCard}
-          onLikeClick={handleLikeClick}
+          setCards={setCards}
           cardsList={cards}
         />
         <Footer />

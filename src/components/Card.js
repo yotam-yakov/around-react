@@ -12,12 +12,10 @@ export default function Card(props) {
     props.onCardDelete(props.card);
   }
 
-  function isLiked() {
-    return props.card.likes.some((like) => like._id === currentUser.id);
-  }
+  const isLiked = props.card.likes.some((like) => like._id === currentUser.id);
 
   function handleLikeClick() {
-    isLiked()
+    isLiked
       ? props.onLikeClick(props.card._id, "DELETE")
       : props.onLikeClick(props.card._id, "PUT");
   }
@@ -46,7 +44,7 @@ export default function Card(props) {
             <button
               type="button"
               className={`element__like-button ${
-                isLiked() ? "element__like-button_active" : ""
+                isLiked ? "element__like-button_active" : ""
               }`}
               onClick={handleLikeClick}
             ></button>
