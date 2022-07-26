@@ -1,4 +1,9 @@
+import React from "react";
+import CurrentUserContext from "../contexts/CurrentUserContext";
+
 export default function Card(props) {
+  const currentUser = React.useContext(CurrentUserContext);
+
   function handleCardClick() {
     props.onCardClick(props.card);
   }
@@ -8,7 +13,7 @@ export default function Card(props) {
   }
 
   function isLiked() {
-    return props.card.likes.some((like) => like._id === props.userId);
+    return props.card.likes.some((like) => like._id === currentUser.id);
   }
 
   function handleLikeClick() {
@@ -23,7 +28,7 @@ export default function Card(props) {
         <button
           type="button"
           className={`element__remove-button ${
-            props.card.owner._id === props.userId
+            props.card.owner._id === currentUser.id
               ? "element__remove-button_owner"
               : ""
           }`}

@@ -1,17 +1,16 @@
 import React from "react";
 import Card from "./Card";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 
 export default function Main(props) {
-  React.useEffect(() => {
-    props.onMount();
-  }, []);
+  const currentUser = React.useContext(CurrentUserContext);
 
   return (
     <main className="content">
       <section className="profile">
         <div className="profile__avatar-cover">
           <img
-            src={props.userData.avatar}
+            src={currentUser.avatar}
             alt="profile avatar of the current user"
             className="profile__avatar"
             id="profile-avatar"
@@ -25,7 +24,7 @@ export default function Main(props) {
         <div className="profile__info">
           <h1 className="profile__name">
             <span id="profile-name" className="profile__name-text">
-              {props.userData.name}
+              {currentUser.name}
             </span>
             <button
               type="button"
@@ -34,7 +33,7 @@ export default function Main(props) {
             ></button>
           </h1>
           <p id="profile-about" className="profile__about">
-            {props.userData.about}
+            {currentUser.about}
           </p>
         </div>
         <button
@@ -50,7 +49,6 @@ export default function Main(props) {
               return (
                 <Card
                   key={card._id}
-                  userId={props.userData.id}
                   card={card}
                   onCardClick={props.onCardClick}
                   onCardDelete={props.onCardDelete}

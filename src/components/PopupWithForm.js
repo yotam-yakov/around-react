@@ -1,6 +1,9 @@
 import React from "react";
+import CurrentUserContext from "../contexts/CurrentUserContext";
 
 export default function PopupWithForm(props) {
+  const currentUser = React.useContext(CurrentUserContext);
+
   React.useEffect(() => {
     document.addEventListener("keydown", handleKeyClose);
 
@@ -14,10 +17,10 @@ export default function PopupWithForm(props) {
   }, [props.formInputs]);
 
   React.useEffect(() => {
-    if (props.formInputsSet) {
-      props.formInputsSet[0](props.userInfo.name);
-      props.formInputsSet[1](props.userInfo.about);
-    }
+    // if (props.formInputsSet) {
+    //   props.formInputsSet[0](currentUser.name);
+    //   props.formInputsSet[1](currentUser.about);
+    // }
     props.validateForm !== undefined && props.validateForm(props.formIsValid);
     props.formIsValid &&
       props.setFormInputs.forEach((setInput) => setInput({ valid: true }));
