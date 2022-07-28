@@ -27,16 +27,8 @@ function App() {
   const [cards, setCards] = React.useState([]);
   const [currentUser, setCurrentUser] = React.useState({});
   //Inputs states
-
-  //Edit form states
-  const [profileName, setProfileName] = React.useState("");
-  const [profileAbout, setProfileAbout] = React.useState("");
-  //Avatar form state
-  //Add form states
   //Loading state
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isAddFormValid, setIsAddFormValid] = React.useState(false);
-  const [isEditFormValid, setIsEditFormValid] = React.useState(true);
 
   //FUNCTIONS
   //Popup opening handlers
@@ -80,32 +72,6 @@ function App() {
       });
   }
 
-  //Other functions
-
-  function checkIfFormValid(name, inputs) {
-    for (let i = 0; i < inputs.length; i++) {
-      if (!inputs[i].valid) {
-        switch (name) {
-          case "edit":
-            setIsEditFormValid(false);
-            break;
-          case "add":
-            setIsAddFormValid(false);
-            break;
-        }
-        return;
-      }
-    }
-    switch (name) {
-      case "edit":
-        setIsEditFormValid(true);
-        break;
-      case "add":
-        setIsAddFormValid(true);
-        break;
-    }
-  }
-
   React.useEffect(() => {
     api
       .getAllInfo()
@@ -117,8 +83,6 @@ function App() {
           avatar: userInfo.avatar,
           id: userInfo._id,
         });
-        setProfileName(userInfo.name);
-        setProfileAbout(userInfo.about);
         setCards(cards);
       })
       .catch((err) => api.reportError(err));
@@ -145,9 +109,6 @@ function App() {
             isOpen={isEditProfilePopupOpen}
             onClose={closeAllPopups}
             updateUser={setCurrentUser}
-            checkValidity={checkIfFormValid}
-            formValidity={isEditFormValid}
-            setFormValidity={setIsEditFormValid}
           />
           <EditAvatarPopup
             isOpen={isEditAvatarPopupOpen}
@@ -159,9 +120,6 @@ function App() {
             isOpen={isAddCardPopupOpen}
             onClose={closeAllPopups}
             updateCards={setCards}
-            checkValidity={checkIfFormValid}
-            formValidity={isAddFormValid}
-            setFormValidity={setIsAddFormValid}
           />
           <PopupWithForm
             name="delete"

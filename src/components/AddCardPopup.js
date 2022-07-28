@@ -11,6 +11,16 @@ export default function AddCardPopup(props) {
   const [formLinkInput, setFormLinkInput] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(false);
 
+  function isAddCardFormValid() {
+    if (!formTitleInput.valid) {
+      return false;
+    }
+    if (!formLinkInput.valid) {
+      return false;
+    }
+    return true;
+  }
+
   function updateInputs(evt) {
     const inputProps = {
       input: evt.target,
@@ -26,7 +36,6 @@ export default function AddCardPopup(props) {
           error: inputProps.error,
         });
         setCardTitle(inputProps.input.value);
-        props.checkValidity("add", [formTitleInput, formLinkInput]);
         break;
       case "link-input":
         setFormLinkInput({
@@ -36,7 +45,6 @@ export default function AddCardPopup(props) {
           error: inputProps.error,
         });
         setCardLink(inputProps.input.value);
-        props.checkValidity("add", [formTitleInput, formLinkInput]);
         break;
     }
   }
@@ -116,9 +124,9 @@ export default function AddCardPopup(props) {
       <button
         type="submit"
         className={`form__save submit-button ${
-          props.formValidity ? "" : "form__save_disabled"
+          isAddCardFormValid() ? "" : "form__save_disabled"
         }`}
-        disabled={!props.formValidity}
+        disabled={!isAddCardFormValid()}
       >
         {isLoading ? "Saving..." : "Save"}
       </button>

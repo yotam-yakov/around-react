@@ -34,6 +34,16 @@ export default function EditProfilePopup(props) {
       });
   }
 
+  function isEditProfileFormValid() {
+    if (!formNameInput.valid) {
+      return false;
+    }
+    if (!formAboutInput.valid) {
+      return false;
+    }
+    return true;
+  }
+
   function handleChange(evt) {
     const inputProps = {
       input: evt.target,
@@ -49,7 +59,6 @@ export default function EditProfilePopup(props) {
           error: inputProps.error,
         });
         setNameInput(inputProps.input.value);
-        props.checkValidity("edit", [formNameInput, formAboutInput]);
         break;
       case "about-input":
         setFormAboutInput({
@@ -59,7 +68,6 @@ export default function EditProfilePopup(props) {
           error: inputProps.error,
         });
         setAboutInput(inputProps.input.value);
-        props.checkValidity("edit", [formNameInput, formAboutInput]);
         break;
     }
   }
@@ -123,9 +131,9 @@ export default function EditProfilePopup(props) {
       <button
         type="submit"
         className={`form__save submit-button ${
-          props.formValidity ? "" : "form__save_disabled"
+          isEditProfileFormValid() ? "" : "form__save_disabled"
         }`}
-        disabled={!props.formValidity}
+        disabled={!isEditProfileFormValid()}
       >
         {isLoading ? "Saving..." : "Save"}
       </button>
