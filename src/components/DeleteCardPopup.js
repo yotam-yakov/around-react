@@ -1,5 +1,5 @@
 import React from "react";
-import api from "./utils/api";
+import api from "../utils/api";
 import PopupWithForm from "./PopupWithForm";
 import CardsContext from "../contexts/CardsContext";
 

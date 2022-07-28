@@ -1,6 +1,6 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
-import api from "./utils/api";
+import api from "../utils/api";
 import CardsContext from "../contexts/CardsContext";
 
 export default function AddCardPopup(props) {
