@@ -3,6 +3,7 @@ import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import api from "./utils/api";
@@ -27,12 +28,10 @@ function App() {
 
   const [formTitleInput, setFormTitleInput] = React.useState({});
   const [formLinkInput, setFormLinkInput] = React.useState({});
-  const [formAvatarInput, setFormAvatarInput] = React.useState({});
   //Edit form states
   const [profileName, setProfileName] = React.useState("");
   const [profileAbout, setProfileAbout] = React.useState("");
   //Avatar form state
-  const [avatarLink, setAvatarLink] = React.useState("");
   //Add form states
   const [cardTitle, setCardTitle] = React.useState("");
   const [cardLink, setCardLink] = React.useState("");
@@ -67,32 +66,13 @@ function App() {
   }
 
   function resetFormValues() {
-    setFormAvatarInput({});
     setFormTitleInput({});
     setFormLinkInput({});
 
-    setAvatarLink("");
     setCardTitle("");
     setCardLink("");
   }
   //Popup submit handlers
-  function submitEditAvatarForm(evt) {
-    evt.preventDefault();
-    setIsLoading(true);
-
-    api
-      .editProfilePicture(formAvatarInput.input.value)
-      .then((userInfo) => {
-        setCurrentUser({ ...currentUser, avatar: userInfo.avatar });
-        setProfileName(userInfo.name);
-        setProfileAbout(userInfo.about);
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
-        closeAllPopups();
-      });
-  }
 
   function submitAddPlaceForm(evt) {
     evt.preventDefault();
@@ -136,26 +116,6 @@ function App() {
       error: evt.target.validationMessage,
     };
     switch (evt.target.id) {
-      // case "name-input":
-      //   setFormNameInput({
-      //     ...formNameInput,
-      //     input: inputProps.input,
-      //     valid: inputProps.valid,
-      //     error: inputProps.error,
-      //   });
-      //   setProfileName(inputProps.input.value);
-      //   checkIfFormValid("edit");
-      //   break;
-      // case "about-input":
-      //   setFormAboutInput({
-      //     ...formAboutInput,
-      //     input: inputProps.input,
-      //     valid: inputProps.valid,
-      //     error: inputProps.error,
-      //   });
-      //   setProfileAbout(inputProps.input.value);
-      //   checkIfFormValid("edit");
-      //   break;
       case "title-input":
         setFormTitleInput({
           ...formTitleInput,
@@ -175,15 +135,6 @@ function App() {
         });
         setCardLink(inputProps.input.value);
         checkIfFormValid("add");
-        break;
-      case "avatar-input":
-        setFormAvatarInput({
-          ...formAvatarInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setAvatarLink(inputProps.input.value);
         break;
     }
   }
@@ -258,40 +209,11 @@ function App() {
           formValidity={isEditFormValid}
           setFormValidity={setIsEditFormValid}
         />
-        <PopupWithForm
-          name="avatar"
-          title="Change Profile Picture"
+        <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
-          onSubmit={submitEditAvatarForm}
-        >
-          <input
-            value={avatarLink || ""}
-            type="url"
-            name="avatar"
-            id="avatar-input"
-            placeholder="Image link"
-            required
-            className={`form__input ${
-              formAvatarInput.valid == false && "form__input_invalid"
-            }`}
-            onChange={updateInputs}
-          />
-          {!formAvatarInput.valid && (
-            <span className="avatar-input-error form__input-error">
-              {formAvatarInput.error}
-            </span>
-          )}
-          <button
-            type="submit"
-            className={`form__save submit-button ${
-              !formAvatarInput.valid && "form__save_disabled"
-            }`}
-            disabled={!formAvatarInput.valid}
-          >
-            {isLoading ? "Saving..." : "Save"}
-          </button>
-        </PopupWithForm>
+          updateUser={setCurrentUser}
+        />
         <PopupWithForm
           name="add"
           title="New Place"
