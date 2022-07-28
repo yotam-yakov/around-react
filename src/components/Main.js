@@ -1,17 +1,19 @@
 import React from "react";
 import Card from "./Card";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import CardsContext from "../contexts/CardsContext";
 import api from "./utils/api";
 
 export default function Main(props) {
   const currentUser = React.useContext(CurrentUserContext);
+  const cards = React.useContext(CardsContext);
 
   function handleLikeClick(cardId, method) {
     api
       .changeCardLike(cardId, method)
       .then(() => {
         api.loadCards().then((data) => {
-          props.setCards(data);
+          props.updateCards(data);
         });
       })
       .catch((err) => api.reportError(err));
@@ -56,8 +58,8 @@ export default function Main(props) {
       </section>
       <section className="elements">
         <ul className="elements__list">
-          {props.cardsList &&
-            props.cardsList.map((card) => {
+          {cards &&
+            cards.map((card) => {
               return (
                 <Card
                   key={card._id}

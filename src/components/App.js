@@ -4,10 +4,12 @@ import Main from "./Main";
 import Footer from "./Footer";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
+import AddCardPopup from "./AddCardPopup";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import api from "./utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import CardsContext from "../contexts/CardsContext";
 import "../index.css";
 
 function App() {
@@ -17,7 +19,7 @@ function App() {
     React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
     React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [isAddCardPopupOpen, setIsAddCardPopupOpen] = React.useState(false);
   //Card selectors
   const [selectedCard, setSelectedCard] = React.useState(null);
   const [deletedCard, setDeletedCard] = React.useState(null);
@@ -26,15 +28,11 @@ function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   //Inputs states
 
-  const [formTitleInput, setFormTitleInput] = React.useState({});
-  const [formLinkInput, setFormLinkInput] = React.useState({});
   //Edit form states
   const [profileName, setProfileName] = React.useState("");
   const [profileAbout, setProfileAbout] = React.useState("");
   //Avatar form state
   //Add form states
-  const [cardTitle, setCardTitle] = React.useState("");
-  const [cardLink, setCardLink] = React.useState("");
   //Loading state
   const [isLoading, setIsLoading] = React.useState(false);
   const [isAddFormValid, setIsAddFormValid] = React.useState(false);
@@ -51,45 +49,19 @@ function App() {
   }
 
   function handleAddPlaceClick() {
-    setIsAddPlacePopupOpen(true);
+    setIsAddCardPopupOpen(true);
   }
 
   //Popup closing handler
   function closeAllPopups() {
-    setIsAddPlacePopupOpen(false);
+    setIsAddCardPopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setSelectedCard(null);
     setDeletedCard(null);
-
-    resetFormValues();
   }
 
-  function resetFormValues() {
-    setFormTitleInput({});
-    setFormLinkInput({});
-
-    setCardTitle("");
-    setCardLink("");
-  }
   //Popup submit handlers
-
-  function submitAddPlaceForm(evt) {
-    evt.preventDefault();
-    setIsLoading(true);
-
-    api
-      .addNewCard({ title: cardTitle, link: cardLink })
-      .then((newCard) => {
-        setCards([newCard, ...cards]);
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
-        closeAllPopups();
-      });
-  }
-
   function submitDeleteCardForm(evt) {
     evt.preventDefault();
     setIsLoading(true);
@@ -109,40 +81,8 @@ function App() {
   }
 
   //Other functions
-  function updateInputs(evt) {
-    const inputProps = {
-      input: evt.target,
-      valid: evt.target.validity.valid,
-      error: evt.target.validationMessage,
-    };
-    switch (evt.target.id) {
-      case "title-input":
-        setFormTitleInput({
-          ...formTitleInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setCardTitle(inputProps.input.value);
-        checkIfFormValid("add");
-        break;
-      case "link-input":
-        setFormLinkInput({
-          ...formLinkInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setCardLink(inputProps.input.value);
-        checkIfFormValid("add");
-        break;
-    }
-  }
 
   function checkIfFormValid(name, inputs) {
-    if (!inputs) {
-      inputs = [formTitleInput, formLinkInput];
-    }
     for (let i = 0; i < inputs.length; i++) {
       if (!inputs[i].valid) {
         switch (name) {
@@ -186,107 +126,64 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <div className="page">
-        {/* Main page content */}
-        <Header />
-        <Main
-          onEditProfileClick={handleEditProfileClick}
-          onAddPlaceClick={handleAddPlaceClick}
-          onEditAvatarClick={handleEditAvatarClick}
-          onCardClick={setSelectedCard}
-          onCardDelete={setDeletedCard}
-          setCards={setCards}
-          cardsList={cards}
-        />
-        <Footer />
+      <CardsContext.Provider value={cards}>
+        <div className="page">
+          {/* Main page content */}
+          <Header />
+          <Main
+            onEditProfileClick={handleEditProfileClick}
+            onAddPlaceClick={handleAddPlaceClick}
+            onEditAvatarClick={handleEditAvatarClick}
+            onCardClick={setSelectedCard}
+            onCardDelete={setDeletedCard}
+            updateCards={setCards}
+          />
+          <Footer />
 
-        {/* Popups */}
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onClose={closeAllPopups}
-          updateUser={setCurrentUser}
-          checkValidity={checkIfFormValid}
-          formValidity={isEditFormValid}
-          setFormValidity={setIsEditFormValid}
-        />
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onClose={closeAllPopups}
-          updateUser={setCurrentUser}
-        />
-        <PopupWithForm
-          name="add"
-          title="New Place"
-          isOpen={isAddPlacePopupOpen}
-          onClose={closeAllPopups}
-          onSubmit={submitAddPlaceForm}
-          formValidator={checkIfFormValid}
-          formInputs={[formTitleInput, formLinkInput]}
-          formIsValid={false}
-          validateForm={setIsAddFormValid}
-        >
-          <input
-            value={cardTitle || ""}
-            type="text"
-            name="title"
-            id="title-input"
-            placeholder="Title"
-            minLength="1"
-            maxLength="30"
-            required
-            className={`form__input ${
-              formTitleInput.valid == false && "form__input_invalid"
-            }`}
-            onChange={updateInputs}
+          {/* Popups */}
+          <EditProfilePopup
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            updateUser={setCurrentUser}
+            checkValidity={checkIfFormValid}
+            formValidity={isEditFormValid}
+            setFormValidity={setIsEditFormValid}
           />
-          {!formTitleInput.valid && (
-            <span className="title-input-error form__input-error">
-              {formTitleInput.error}
-            </span>
-          )}
-          <input
-            value={cardLink || ""}
-            type="url"
-            name="link"
-            id="link-input"
-            placeholder="Image link"
-            required
-            className={`form__input ${
-              formLinkInput.valid == false && "form__input_invalid"
-            }`}
-            onChange={updateInputs}
+          <EditAvatarPopup
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            updateUser={setCurrentUser}
+            updateCards={setCards}
           />
-          {!formLinkInput.valid && (
-            <span className="link-input-error form__input-error">
-              {formLinkInput.error}
-            </span>
-          )}
-          <button
-            type="submit"
-            className={`form__save submit-button ${
-              isAddFormValid ? "" : "form__save_disabled"
-            }`}
-            disabled={!isAddFormValid}
+          <AddCardPopup
+            isOpen={isAddCardPopupOpen}
+            onClose={closeAllPopups}
+            updateCards={setCards}
+            checkValidity={checkIfFormValid}
+            formValidity={isAddFormValid}
+            setFormValidity={setIsAddFormValid}
+          />
+          <PopupWithForm
+            name="delete"
+            isOpen={deletedCard}
+            onSubmit={submitDeleteCardForm}
+            title="Are You Sure?"
           >
-            {isLoading ? "Saving..." : "Save"}
-          </button>
-        </PopupWithForm>
-        <PopupWithForm
-          name="delete"
-          isOpen={deletedCard}
-          onSubmit={submitDeleteCardForm}
-          title="Are You Sure?"
-        >
-          <button
-            type="submit"
-            id="popup-submit"
-            className="delete-popup__confirm-button popup__button submit-button"
-          >
-            {isLoading ? "Deleting..." : "Yes"}
-          </button>
-        </PopupWithForm>
-        <ImagePopup name="image" card={selectedCard} onClose={closeAllPopups} />
-      </div>
+            <button
+              type="submit"
+              id="popup-submit"
+              className="delete-popup__confirm-button popup__button submit-button"
+            >
+              {isLoading ? "Deleting..." : "Yes"}
+            </button>
+          </PopupWithForm>
+          <ImagePopup
+            name="image"
+            card={selectedCard}
+            onClose={closeAllPopups}
+          />
+        </div>
+      </CardsContext.Provider>
     </CurrentUserContext.Provider>
   );
 }

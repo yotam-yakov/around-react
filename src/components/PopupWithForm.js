@@ -10,7 +10,8 @@ export default function PopupWithForm(props) {
   }, []);
 
   React.useEffect(() => {
-    props.formValidator !== undefined && props.formValidator(props.name);
+    props.formValidator !== undefined &&
+      props.formValidator(props.name, props.formInputs);
   }, [props.formInputs]);
 
   React.useEffect(() => {
