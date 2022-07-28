@@ -7,7 +7,7 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import AddCardPopup from "./AddPlacePopup";
 import DeleteCardPopup from "./DeleteCardPopup";
 import ImagePopup from "./ImagePopup";
-import api from "./utils/api";
+import { api } from "./utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import CardsContext from "../contexts/CardsContext";
 import "../index.css";
