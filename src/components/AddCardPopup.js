@@ -21,7 +21,7 @@ export default function AddCardPopup(props) {
     return true;
   }
 
-  function updateInputs(evt) {
+  function handleChange(evt) {
     const inputProps = {
       input: evt.target,
       valid: evt.target.validity.valid,
@@ -79,11 +79,6 @@ export default function AddCardPopup(props) {
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSubmit={submitAddPlaceForm}
-      formValidator={props.checkValidity}
-      formInputs={[formTitleInput, formLinkInput]}
-      setFormInputs={[setFormTitleInput, setFormLinkInput]}
-      formIsValid={false}
-      validateForm={props.setFormValidity}
     >
       <input
         value={cardTitle || ""}
@@ -95,9 +90,9 @@ export default function AddCardPopup(props) {
         maxLength="30"
         required
         className={`form__input ${
-          formTitleInput.valid == false && "form__input_invalid"
+          formTitleInput.valid === false && "form__input_invalid"
         }`}
-        onChange={updateInputs}
+        onChange={handleChange}
       />
       {!formTitleInput.valid && (
         <span className="title-input-error form__input-error">
@@ -112,9 +107,9 @@ export default function AddCardPopup(props) {
         placeholder="Image link"
         required
         className={`form__input ${
-          formLinkInput.valid == false && "form__input_invalid"
+          formLinkInput.valid === false && "form__input_invalid"
         }`}
-        onChange={updateInputs}
+        onChange={handleChange}
       />
       {!formLinkInput.valid && (
         <span className="link-input-error form__input-error">

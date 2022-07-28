@@ -9,17 +9,6 @@ export default function PopupWithForm(props) {
     };
   }, []);
 
-  React.useEffect(() => {
-    props.formValidator !== undefined &&
-      props.formValidator(props.name, props.formInputs);
-  }, [props.formInputs]);
-
-  React.useEffect(() => {
-    props.validateForm !== undefined && props.validateForm(props.formIsValid);
-    props.formIsValid &&
-      props.setFormInputs.forEach((setInput) => setInput({ valid: true }));
-  }, [props.isOpen]);
-
   function handleKeyClose(evt) {
     if (evt.key === "Escape") {
       props.onClose();

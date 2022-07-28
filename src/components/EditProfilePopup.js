@@ -73,6 +73,8 @@ export default function EditProfilePopup(props) {
   }
 
   React.useEffect(() => {
+    setFormNameInput({ valid: true });
+    setFormAboutInput({ valid: true });
     setNameInput(currentUser.name);
     setAboutInput(currentUser.about);
   }, [currentUser, props.isOpen]);
@@ -84,11 +86,6 @@ export default function EditProfilePopup(props) {
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSubmit={handleSubmit}
-      formIsValid={true}
-      formInputs={[formNameInput, formAboutInput]}
-      setFormInputs={[setFormNameInput, setFormAboutInput]}
-      validateForm={props.setFormValidity}
-      formInputsSet={[setNameInput, setAboutInput]}
     >
       <input
         value={nameInput || ""}
@@ -100,7 +97,7 @@ export default function EditProfilePopup(props) {
         maxLength="40"
         required
         className={`form__input ${
-          formNameInput.valid == false && "form__input_invalid"
+          formNameInput.valid === false && "form__input_invalid"
         }`}
         onChange={handleChange}
       />
@@ -119,7 +116,7 @@ export default function EditProfilePopup(props) {
         maxLength="200"
         required
         className={`form__input ${
-          formAboutInput.valid == false && "form__input_invalid"
+          formAboutInput.valid === false && "form__input_invalid"
         }`}
         onChange={handleChange}
       />

@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddCardPopup from "./AddCardPopup";
-import PopupWithForm from "./PopupWithForm";
+import DeleteCardPopup from "./DeleteCardPopup";
 import ImagePopup from "./ImagePopup";
 import api from "./utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
@@ -26,9 +26,6 @@ function App() {
   //Server data
   const [cards, setCards] = React.useState([]);
   const [currentUser, setCurrentUser] = React.useState({});
-  //Inputs states
-  //Loading state
-  const [isLoading, setIsLoading] = React.useState(false);
 
   //FUNCTIONS
   //Popup opening handlers
@@ -54,23 +51,6 @@ function App() {
   }
 
   //Popup submit handlers
-  function submitDeleteCardForm(evt) {
-    evt.preventDefault();
-    setIsLoading(true);
-
-    api
-      .deleteCard(deletedCard._id)
-      .then(() => {
-        api.loadCards().then(() => {
-          setCards(cards.filter((card) => card._id !== deletedCard._id));
-        });
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
-        closeAllPopups();
-      });
-  }
 
   React.useEffect(() => {
     api
@@ -121,20 +101,11 @@ function App() {
             onClose={closeAllPopups}
             updateCards={setCards}
           />
-          <PopupWithForm
-            name="delete"
-            isOpen={deletedCard}
-            onSubmit={submitDeleteCardForm}
-            title="Are You Sure?"
-          >
-            <button
-              type="submit"
-              id="popup-submit"
-              className="delete-popup__confirm-button popup__button submit-button"
-            >
-              {isLoading ? "Deleting..." : "Yes"}
-            </button>
-          </PopupWithForm>
+          <DeleteCardPopup
+            deletedCard={deletedCard}
+            onClose={closeAllPopups}
+            updateCards={setCards}
+          />
           <ImagePopup
             name="image"
             card={selectedCard}
