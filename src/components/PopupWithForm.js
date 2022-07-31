@@ -1,20 +1,6 @@
 import React from "react";
 
 export default function PopupWithForm(props) {
-  React.useEffect(() => {
-    document.addEventListener("keydown", handleKeyClose);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyClose);
-    };
-  }, []);
-
-  function handleKeyClose(evt) {
-    if (evt.key === "Escape") {
-      props.onClose();
-    }
-  }
-
   return (
     <div
       className={`${props.name}-popup popup ${
@@ -40,7 +26,19 @@ export default function PopupWithForm(props) {
           onSubmit={props.onSubmit}
           noValidate
         >
-          <fieldset className="form__fieldset">{props.children}</fieldset>
+          <fieldset className="form__fieldset">
+            {props.children}
+            <button
+              type="submit"
+              id="popup-submit"
+              className={`form__save submit-button ${
+                props.isFormValid ? "" : "form__save_disabled"
+              }`}
+              disabled={!props.isFormValid}
+            >
+              {props.submitText}
+            </button>
+          </fieldset>
         </form>
       </div>
     </div>

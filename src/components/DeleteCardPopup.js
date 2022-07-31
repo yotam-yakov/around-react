@@ -1,27 +1,27 @@
 import React from "react";
-import api from "../utils/api";
 import PopupWithForm from "./PopupWithForm";
 import CardsContext from "../contexts/CardsContext";
+import LoadingFormContext from "../contexts/LoadingFormContext";
 
 export default function DeleteCardPopup(props) {
-  const [isLoading, setIsLoading] = React.useState(false);
   const cards = React.useContext(CardsContext);
+  const isLoading = React.useContext(LoadingFormContext);
 
   function submitDeleteCardForm(evt) {
     evt.preventDefault();
-    setIsLoading(true);
+    props.setLoadingState(true);
 
-    api
-      .deleteCard(props.deletedCard._id)
+    props
+      .submitRequest(props.deletedCard._id)
       .then(() => {
         props.updateCards(
           cards.filter((card) => card._id !== props.deletedCard._id)
         );
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
         props.onClose();
+      })
+      .catch((err) => props.requestError(err))
+      .finally(() => {
+        props.setLoadingState(false);
       });
   }
 
@@ -30,16 +30,10 @@ export default function DeleteCardPopup(props) {
       name="delete"
       title="Are You Sure?"
       isOpen={props.deletedCard}
+      isFormValid={true}
       onSubmit={submitDeleteCardForm}
       onClose={props.onClose}
-    >
-      <button
-        type="submit"
-        id="popup-submit"
-        className="delete-popup__confirm-button popup__button submit-button"
-      >
-        {isLoading ? "Deleting..." : "Yes"}
-      </button>
-    </PopupWithForm>
+      submitText={isLoading ? "Deleting..." : "Yes"}
+    ></PopupWithForm>
   );
 }

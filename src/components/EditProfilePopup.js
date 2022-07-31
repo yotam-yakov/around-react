@@ -1,24 +1,30 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
 import CurrentUserContext from "../contexts/CurrentUserContext";
-import api from "../utils/api";
+import LoadingFormContext from "../contexts/LoadingFormContext";
+import useFormValidation from "../hooks/formValidatorHook";
 
 export default function EditProfilePopup(props) {
   const currentUser = React.useContext(CurrentUserContext);
-  const [nameInput, setNameInput] = React.useState("");
-  const [aboutInput, setAboutInput] = React.useState("");
-  const [formNameInput, setFormNameInput] = React.useState({});
-  const [formAboutInput, setFormAboutInput] = React.useState({});
-  const [isLoading, setIsLoading] = React.useState(false);
+  const isLoading = React.useContext(LoadingFormContext);
+  const {
+    values,
+    handleChange,
+    errors,
+    isValid,
+    setValues,
+    setIsValid,
+    resetForm,
+  } = useFormValidation();
 
   function handleSubmit(evt) {
     evt.preventDefault();
-    setIsLoading(true);
+    props.setLoadingState(true);
 
-    api
-      .editProfileInfo({
-        name: nameInput,
-        about: aboutInput,
+    props
+      .submitRequest({
+        name: values.name,
+        about: values.about,
       })
       .then((userInfo) => {
         props.updateUser({
@@ -26,57 +32,18 @@ export default function EditProfilePopup(props) {
           name: userInfo.name,
           about: userInfo.about,
         });
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
         props.onClose();
+      })
+      .catch((err) => props.requestError(err))
+      .finally(() => {
+        props.setLoadingState(false);
       });
   }
 
-  function isEditProfileFormValid() {
-    if (!formNameInput.valid) {
-      return false;
-    }
-    if (!formAboutInput.valid) {
-      return false;
-    }
-    return true;
-  }
-
-  function handleChange(evt) {
-    const inputProps = {
-      input: evt.target,
-      valid: evt.target.validity.valid,
-      error: evt.target.validationMessage,
-    };
-    switch (evt.target.id) {
-      case "name-input":
-        setFormNameInput({
-          ...formNameInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setNameInput(inputProps.input.value);
-        break;
-      case "about-input":
-        setFormAboutInput({
-          ...formAboutInput,
-          input: inputProps.input,
-          valid: inputProps.valid,
-          error: inputProps.error,
-        });
-        setAboutInput(inputProps.input.value);
-        break;
-    }
-  }
-
   React.useEffect(() => {
-    setFormNameInput({ valid: true });
-    setFormAboutInput({ valid: true });
-    setNameInput(currentUser.name);
-    setAboutInput(currentUser.about);
+    resetForm();
+    setValues({ ...values, name: currentUser.name, about: currentUser.about });
+    setIsValid(true);
   }, [currentUser, props.isOpen]);
 
   return (
@@ -86,9 +53,11 @@ export default function EditProfilePopup(props) {
       isOpen={props.isOpen}
       onClose={props.onClose}
       onSubmit={handleSubmit}
+      isFormValid={isValid}
+      submitText={isLoading ? "Saving..." : "Save"}
     >
       <input
-        value={nameInput || ""}
+        value={values.name || ""}
         type="text"
         name="name"
         id="name-input"
@@ -96,18 +65,16 @@ export default function EditProfilePopup(props) {
         minLength="2"
         maxLength="40"
         required
-        className={`form__input ${
-          formNameInput.valid === false && "form__input_invalid"
-        }`}
+        className={`form__input ${errors.name && "form__input_invalid"}`}
         onChange={handleChange}
       />
-      {!formNameInput.valid && (
+      {errors.name && (
         <span className="name-input-error form__input-error">
-          {formNameInput.error}
+          {errors.name}
         </span>
       )}
       <input
-        value={aboutInput || ""}
+        value={values.about || ""}
         type="text"
         name="about"
         id="about-input"
@@ -115,25 +82,14 @@ export default function EditProfilePopup(props) {
         minLength="2"
         maxLength="200"
         required
-        className={`form__input ${
-          formAboutInput.valid === false && "form__input_invalid"
-        }`}
+        className={`form__input ${errors.about && "form__input_invalid"}`}
         onChange={handleChange}
       />
-      {!formAboutInput.valid && (
+      {errors.about && (
         <span className="about-input-error form__input-error">
-          {formAboutInput.error}
+          {errors.about}
         </span>
       )}
-      <button
-        type="submit"
-        className={`form__save submit-button ${
-          isEditProfileFormValid() ? "" : "form__save_disabled"
-        }`}
-        disabled={!isEditProfileFormValid()}
-      >
-        {isLoading ? "Saving..." : "Save"}
-      </button>
     </PopupWithForm>
   );
 }

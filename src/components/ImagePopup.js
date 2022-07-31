@@ -1,20 +1,6 @@
 import React from "react";
 
 export default function ImagePopup(props) {
-  React.useEffect(() => {
-    document.addEventListener("keydown", handleKeyClose);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyClose);
-    };
-  }, []);
-
-  function handleKeyClose(evt) {
-    if (evt.key === "Escape") {
-      props.onClose();
-    }
-  }
-
   return (
     <div
       className={`image-popup popup ${props.card ? "popup_opened" : ""}`}

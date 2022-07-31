@@ -2,21 +2,20 @@ import React from "react";
 import Card from "./Card";
 import CurrentUserContext from "../contexts/CurrentUserContext";
 import CardsContext from "../contexts/CardsContext";
-import api from "../utils/api";
 
 export default function Main(props) {
   const currentUser = React.useContext(CurrentUserContext);
   const cards = React.useContext(CardsContext);
 
   function handleLikeClick(cardId, method) {
-    api
-      .changeCardLike(cardId, method)
-      .then(() => {
-        api.loadCards().then((data) => {
-          props.updateCards(data);
-        });
+    props
+      .likeRequest(cardId, method)
+      .then((newCard) => {
+        props.updateCards((state) =>
+          state.map((card) => (card._id === newCard._id ? newCard : card))
+        );
       })
-      .catch((err) => api.reportError(err));
+      .catch((err) => props.requestError(err));
   }
 
   return (

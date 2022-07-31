@@ -66,7 +66,7 @@ class Api {
       });
   }
 
-  editProfilePicture(avatarUrl) {
+  editProfileAvatar(avatarUrl) {
     return fetch(`${this._options.baseUrl}/users/me/avatar`, {
       method: "PATCH",
       headers: this._options.headers,

@@ -1,50 +1,33 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
-import api from "../utils/api";
 import CurrentUserContext from "../contexts/CurrentUserContext";
+import LoadingFormContext from "../contexts/LoadingFormContext";
+import useFormValidation from "../hooks/formValidatorHook";
 
 export default function EditAvatarPopup(props) {
   const currentUser = React.useContext(CurrentUserContext);
-  const [avatarLink, setAvatarLink] = React.useState("");
-  const [formAvatarInput, setFormAvatarInput] = React.useState({});
-  const [isLoading, setIsLoading] = React.useState(false);
-  const avatarInputRef = React.useRef();
-
-  function handleChange(evt) {
-    const inputProps = {
-      input: evt.target,
-      valid: evt.target.validity.valid,
-      error: evt.target.validationMessage,
-    };
-
-    setFormAvatarInput({
-      ...formAvatarInput,
-      input: inputProps.input,
-      valid: inputProps.valid,
-      error: inputProps.error,
-    });
-    setAvatarLink(inputProps.input.value);
-  }
+  const isLoading = React.useContext(LoadingFormContext);
+  const { values, handleChange, errors, isValid, resetForm } =
+    useFormValidation();
 
   function submitEditAvatarForm(evt) {
     evt.preventDefault();
-    setIsLoading(true);
+    props.setLoadingState(true);
 
-    api
-      .editProfilePicture(avatarInputRef.current.value)
+    props
+      .submitRequest(values.avatar)
       .then((userInfo) => {
         props.updateUser({ ...currentUser, avatar: userInfo.avatar });
-      })
-      .catch((err) => api.reportError(err))
-      .finally(() => {
-        setIsLoading(false);
         props.onClose();
+      })
+      .catch((err) => props.requestError(err))
+      .finally(() => {
+        props.setLoadingState(false);
       });
   }
 
   React.useEffect(() => {
-    setAvatarLink("");
-    setFormAvatarInput({});
+    resetForm();
   }, [props.isOpen]);
 
   return (
@@ -52,36 +35,26 @@ export default function EditAvatarPopup(props) {
       name="avatar"
       title="Change Profile Picture"
       isOpen={props.isOpen}
+      isFormValid={isValid}
       onClose={props.onClose}
       onSubmit={submitEditAvatarForm}
+      submitText={isLoading ? "Saving..." : "Save"}
     >
       <input
-        value={avatarLink || ""}
-        ref={avatarInputRef}
+        value={values.avatar || ""}
         type="url"
         name="avatar"
         id="avatar-input"
         placeholder="Image link"
         required
-        className={`form__input ${
-          formAvatarInput.valid === false && "form__input_invalid"
-        }`}
+        className={`form__input ${errors.avatar && "form__input_invalid"}`}
         onChange={handleChange}
       />
-      {!formAvatarInput.valid && (
+      {errors.avatar && (
         <span className="avatar-input-error form__input-error">
-          {formAvatarInput.error}
+          {errors.avatar}
         </span>
       )}
-      <button
-        type="submit"
-        className={`form__save submit-button ${
-          !formAvatarInput.valid && "form__save_disabled"
-        }`}
-        disabled={!formAvatarInput.valid}
-      >
-        {isLoading ? "Saving..." : "Save"}
-      </button>
     </PopupWithForm>
   );
 }
